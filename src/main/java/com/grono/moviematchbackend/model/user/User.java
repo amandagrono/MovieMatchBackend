@@ -62,6 +62,9 @@ public class User {
     @NotNull
     private List<String> groups;
 
+    @NotNull
+    private String country;
+
     public User(String username, String password, Integer age, Boolean netflix, Boolean hulu, Boolean amazon, Boolean disneyPlus,Boolean hbo, Boolean paramountPlus, Boolean peacock, Boolean showtime) {
         this.username = username;
         this.token = UUID.randomUUID().toString();
