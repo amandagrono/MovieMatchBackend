@@ -1,14 +1,17 @@
 package com.grono.moviematchbackend.service;
 
+import com.grono.moviematchbackend.model.user.LoginBody;
 import com.grono.moviematchbackend.model.user.User;
 import com.grono.moviematchbackend.repository.UserRepository;
 import com.mongodb.MongoWriteException;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -19,7 +22,9 @@ public class UserService {
     public Map<String, String> addUser(User user){
         Map<String, String> map = new HashMap<>();
         try{
-            map.put("token",userRepository.insert(user).getToken());
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+            user.setPassword(encoder.encode(user.getPassword()));
+            map.put("token",userRepository.insert(user).getToken().get(0));
             map.put("status", "200");
         }
         catch (Exception e){
@@ -28,6 +33,7 @@ public class UserService {
                 map.put("status", "409");
             }
             else{
+                e.printStackTrace();
                 map.put("token", null);
                 map.put("Status", "500");
             }
@@ -35,4 +41,51 @@ public class UserService {
         return map;
 
     }
+    public Map<String, String> login(LoginBody loginBody){
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        Optional<User> user = userRepository.findUserByUsername(loginBody.getUsername());
+        Map<String, String> returnMap = new HashMap<>();
+        if(user.isPresent()){
+            if(encoder.matches(loginBody.getPassword(), user.get().getPassword())){
+                String token = user.get().generateToken();
+                returnMap.put("token", token);
+                returnMap.put("status", "200");
+                returnMap.put("message", "Successfully Logged In");
+                if(user.get().getToken().size() > 3){
+                    user.get().getToken().remove(0);
+                }
+                userRepository.save(user.get());
+                return returnMap;
+            }
+            else{
+                returnMap.put("status", "401");
+                returnMap.put("message", "Password Incorrect");
+            }
+        }
+        else{
+            returnMap.put("status", "400");
+            returnMap.put("message", "User Not Found");
+        }
+        return returnMap;
+
+    }
+
+    public boolean deleteUser(LoginBody body){
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        Optional<User> user = userRepository.findUserByUsername(body.getUsername());
+        if(user.isPresent()){
+            if(encoder.matches(body.getPassword(), user.get().getPassword())){
+                userRepository.delete(user.get());
+                //groupRepository, delete member from all associated groups.
+                Optional<User> deletedUser = userRepository.findUserByUsername(body.getUsername());
+                return deletedUser.isEmpty();
+            }
+        }
+        return false;
+    }
+    public boolean checkSession(String username, String token){
+        Optional<User> user = userRepository.findUserByUsername(username);
+        return user.map(value -> value.getToken().contains(token)).orElse(false);
+    }
+
 }

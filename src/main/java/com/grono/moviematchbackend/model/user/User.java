@@ -22,7 +22,7 @@ public class User {
     @NotBlank(message = "username must not be null")
     private String username;
 
-    private String token;
+    private List<String> token;
 
     //will eventually hash the password!
     private String password;
@@ -65,9 +65,9 @@ public class User {
     @NotNull
     private String country;
 
-    public User(String username, String password, Integer age, Boolean netflix, Boolean hulu, Boolean amazon, Boolean disneyPlus,Boolean hbo, Boolean paramountPlus, Boolean peacock, Boolean showtime) {
+    public User(String username, String password, Integer age, Boolean netflix, Boolean hulu, Boolean amazon, Boolean disneyPlus,Boolean hbo, Boolean paramountPlus, Boolean peacock, Boolean showtime, String country) {
         this.username = username;
-        this.token = UUID.randomUUID().toString();
+        this.token = List.of(UUID.randomUUID().toString());
         this.password = password;
         this.age = age;
         this.netflix = netflix;
@@ -83,10 +83,17 @@ public class User {
         this.listOfLikedTvShows = List.of();
         this.listOfDislikedTvShows = List.of();
         this.groups = List.of();
+        this.country = country;
     }
 
     public static User getInstance(User user){
-        return new User(user.username, user.password, user.age, user.netflix, user.hulu, user.amazon, user.disneyPlus,user.hbo,user.paramountPlus, user.peacock, user.showtime);
+        return new User(user.username, user.password, user.age, user.netflix, user.hulu, user.amazon, user.disneyPlus,user.hbo,user.paramountPlus, user.peacock, user.showtime, user.country);
 
+    }
+
+    public String generateToken(){
+        String newToken = UUID.randomUUID().toString();
+        token.add(newToken);
+        return newToken;
     }
 }
