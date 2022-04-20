@@ -1,7 +1,7 @@
 package com.grono.moviematchbackend.controller;
 
-import com.grono.moviematchbackend.model.user.CheckSessionBody;
-import com.grono.moviematchbackend.model.user.LoginBody;
+import com.grono.moviematchbackend.model.user.request.CheckSessionBody;
+import com.grono.moviematchbackend.model.user.request.LoginBody;
 import com.grono.moviematchbackend.model.user.User;
 import com.grono.moviematchbackend.service.UserService;
 import lombok.AllArgsConstructor;
@@ -11,7 +11,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("api/v1/user")

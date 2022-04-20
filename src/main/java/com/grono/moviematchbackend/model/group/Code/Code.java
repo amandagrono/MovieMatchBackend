@@ -1,4 +1,4 @@
-package com.grono.moviematchbackend.model.Code;
+package com.grono.moviematchbackend.model.group.Code;
 
 import com.grono.moviematchbackend.Constants;
 import lombok.Data;

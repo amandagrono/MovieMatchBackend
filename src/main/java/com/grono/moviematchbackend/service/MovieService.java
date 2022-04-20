@@ -1,14 +1,15 @@
 package com.grono.moviematchbackend.service;
 
-import com.grono.moviematchbackend.model.Movie;
+import com.grono.moviematchbackend.model.movie.Movie;
+import com.grono.moviematchbackend.model.movie.request.ViewMovieBody;
+import com.grono.moviematchbackend.model.user.User;
 import com.grono.moviematchbackend.repository.MovieRepository;
+import com.grono.moviematchbackend.repository.UserRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.sql.SQLOutput;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,12 +17,14 @@ import java.util.Optional;
 @AllArgsConstructor
 public class MovieService {
     private final MovieRepository movieRepository;
+    private final UserService userService;
+    private final UserRepository userRepository;
 
     public List<Movie> fetchAllMovies(){
         return movieRepository.findAll();
     }
 
-    public Movie getMovieById(Long id){
+    public Movie getMovieById(Integer id){
         Optional<Movie> movie = movieRepository.findMovieByMovieId(id);
         return movie.orElse(null);
     }
@@ -52,6 +55,24 @@ public class MovieService {
         return 0;
 
 
+    }
+    public void viewMovie(ViewMovieBody body){
+        if(!userService.checkSession(body.getUsername(), body.getToken())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+        Optional<User> user = userRepository.findUserByUsername(body.getUsername());
+        if(user.isPresent()){
+            if(body.getLike()){
+                user.get().getListOfLikedMovies().add(body.getMovieId());
+            }
+            else{
+                user.get().getListOfDislikedMovies().add(body.getMovieId());
+            }
+            userRepository.save(user.get());
+        }
+        else{
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }

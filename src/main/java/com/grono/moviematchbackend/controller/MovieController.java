@@ -1,11 +1,10 @@
 package com.grono.moviematchbackend.controller;
 
-import com.grono.moviematchbackend.model.Movie;
-import com.grono.moviematchbackend.repository.MovieRepository;
+import com.grono.moviematchbackend.model.movie.Movie;
+import com.grono.moviematchbackend.model.movie.request.ViewMovieBody;
 import com.grono.moviematchbackend.service.MovieService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -25,7 +24,7 @@ public class MovieController {
 
     @GetMapping(value = "{id}")
     public Movie getMovieById(@PathVariable String id){
-        return movieService.getMovieById(Long.valueOf(id));
+        return movieService.getMovieById(Integer.valueOf(id));
     }
 
     @PostMapping(path = "/insert")
@@ -34,5 +33,9 @@ public class MovieController {
         if(status == 1){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+    @PostMapping("/view")
+    public void viewMovie(@RequestBody ViewMovieBody body){
+        movieService.viewMovie(body);
     }
 }

@@ -1,18 +1,7 @@
 package com.grono.moviematchbackend;
 
-import com.grono.moviematchbackend.model.Movie;
-import com.grono.moviematchbackend.model.enums.Genre;
-import com.grono.moviematchbackend.model.enums.StreamingService;
-import com.grono.moviematchbackend.repository.MovieRepository;
-import com.mongodb.DuplicateKeyException;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
 
 @SpringBootApplication
 public class MovieMatchBackendApplication {

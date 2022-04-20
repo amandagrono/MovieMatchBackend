@@ -1,9 +1,8 @@
 package com.grono.moviematchbackend.model.group;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.grono.moviematchbackend.model.Code.Code;
+import com.grono.moviematchbackend.model.group.Code.Code;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.data.annotation.Id;

@@ -1,9 +1,8 @@
 package com.grono.moviematchbackend.service;
 
-import com.grono.moviematchbackend.model.user.LoginBody;
+import com.grono.moviematchbackend.model.user.request.LoginBody;
 import com.grono.moviematchbackend.model.user.User;
 import com.grono.moviematchbackend.repository.UserRepository;
-import com.mongodb.MongoWriteException;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -86,6 +84,16 @@ public class UserService {
     public boolean checkSession(String username, String token){
         Optional<User> user = userRepository.findUserByUsername(username);
         return user.map(value -> value.getToken().contains(token)).orElse(false);
+    }
+
+    public boolean addGroupToUser(String groupId, String username){
+        Optional<User> user = userRepository.findUserByUsername(username);
+        if(user.isPresent()){
+            user.get().getGroups().add(groupId);
+            userRepository.save(user.get());
+            return true;
+        }
+        return false;
     }
 
 }
