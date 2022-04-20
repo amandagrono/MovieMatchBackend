@@ -1,4 +1,4 @@
-package com.grono.moviematchbackend.model;
+package com.grono.moviematchbackend.model.group;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.grono.moviematchbackend.model.Code.Code;
@@ -26,9 +26,9 @@ public class Group {
     @NotNull
     private Code code;
 
-    public Group(String name) {
+    public Group(String name, List<String> users) {
         this.name = name;
-        this.users = List.of();
+        this.users = users;
         this.movies = List.of();
         this.tvShows = List.of();
         this.code = Code.getInstance();

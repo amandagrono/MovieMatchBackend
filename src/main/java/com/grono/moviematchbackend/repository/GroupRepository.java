@@ -1,6 +1,6 @@
 package com.grono.moviematchbackend.repository;
 
-import com.grono.moviematchbackend.model.Group;
+import com.grono.moviematchbackend.model.group.Group;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;
