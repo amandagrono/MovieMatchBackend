@@ -1,4 +1,4 @@
-package com.grono.moviematchbackend.model.user;
+package com.grono.moviematchbackend.model.user.request;
 
 import lombok.Data;
 

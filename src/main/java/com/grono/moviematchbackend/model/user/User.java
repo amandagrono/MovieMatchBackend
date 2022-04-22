@@ -1,6 +1,7 @@
 package com.grono.moviematchbackend.model.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.grono.moviematchbackend.model.enums.StreamingService;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -8,6 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -95,5 +97,19 @@ public class User {
         String newToken = UUID.randomUUID().toString();
         token.add(newToken);
         return newToken;
+    }
+
+    public List<StreamingService> getStreamingServices(){
+        List<StreamingService> list = new ArrayList<>();
+        if(netflix) list.add(StreamingService.Netflix);
+        if(hulu) list.add(StreamingService.Hulu);
+        if(amazon) list.add(StreamingService.AmazonPrime);
+        if(disneyPlus) list.add(StreamingService.DisneyPlus);
+        if(hbo) list.add(StreamingService.HBOMax);
+        if(paramountPlus) list.add(StreamingService.ParamountPlus);
+        if(peacock) list.add(StreamingService.PeacockPremium);
+        if(showtime) list.add(StreamingService.Showtime);
+
+        return list;
     }
 }
