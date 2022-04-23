@@ -18,6 +18,11 @@ public class MovieController {
 
     private final MovieService movieService;
 
+    @GetMapping("/fetch")
+    public List<Movie> getAll(){
+        return movieService.fetchAllMovies();
+    }
+
     @GetMapping(value = "{id}")
     public Movie getMovieById(@PathVariable String id){
         return movieService.getMovieById(Integer.valueOf(id));

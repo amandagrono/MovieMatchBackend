@@ -1,5 +1,6 @@
 package com.grono.moviematchbackend.service;
 
+import com.grono.moviematchbackend.model.enums.Genre;
 import com.grono.moviematchbackend.model.enums.StreamingService;
 import com.grono.moviematchbackend.model.group.Group;
 import com.grono.moviematchbackend.model.movie.Movie;
@@ -103,44 +104,16 @@ public class MovieService {
             Set<Integer> groupLikedMovies = getGroupLikedMovies(user.get().getGroups());
 
             if(body.getCast().isEmpty() && body.getDirectors().isEmpty()){
-                System.out.println("Here 1");
-                retList = movieRepository.fetchMoviesWithGroup(viewedMovies, groupLikedMovies, user.get().getCountry(), user.get().getStreamingServices(), body.getGenres(), start, end);
-                if(retList.size() > 15){
-                    return retList;
-                }
-                else{
-                    retList.addAll(movieRepository.fetchMovies(viewedMovies, user.get().getCountry(), user.get().getStreamingServices(), body.getGenres(), start,end));
-                }
+                retList = fetch(viewedMovies, groupLikedMovies, user.get(), body.getGenres(), start, end);
             }
             else if(!body.getCast().isEmpty() && body.getDirectors().isEmpty()){
-                System.out.println("Here 2");
-                retList = movieRepository.fetchMoviesWithGroupCast(viewedMovies, groupLikedMovies, user.get().getCountry(),user.get().getStreamingServices(),body.getGenres(), body.getCast(), start, end);
-                if(retList.size() > 15){
-                    return retList;
-                }
-                else{
-                    retList.addAll(movieRepository.fetchMoviesCast(viewedMovies, user.get().getCountry(), user.get().getStreamingServices(), body.getGenres(), start,end,body.getCast()));
-                }
+                retList = fetchCast(viewedMovies, groupLikedMovies, user.get(), body.getGenres(), start, end, body.getCast());
             }
             else if(body.getCast().isEmpty() && !body.getDirectors().isEmpty()){
-                System.out.println("Here 3");
-                retList = movieRepository.fetchMoviesWithGroupDirector(viewedMovies, groupLikedMovies, user.get().getCountry() ,user.get().getStreamingServices(),body.getGenres(), body.getDirectors(), start, end);
-                if(retList.size() > 15){
-                    return retList;
-                }
-                else{
-                    retList.addAll(movieRepository.fetchMoviesDirector(viewedMovies, user.get().getCountry(), user.get().getStreamingServices(), body.getGenres(), start, end, body.getDirectors()));
-                }
+                retList = fetchDirector(viewedMovies, groupLikedMovies, user.get(), body.getGenres(), start, end, body.getDirectors());
             }
             else{
-                System.out.println("Here 4");
-                retList = movieRepository.fetchMoviesWithGroupCastDirector(viewedMovies, groupLikedMovies, user.get().getCountry(),user.get().getStreamingServices(), body.getGenres(), body.getCast() , body.getDirectors(), start, end);
-                if(retList.size() > 15){
-                    return retList;
-                }
-                else{
-                    retList.addAll(movieRepository.fetchMoviesCastDirector(viewedMovies, user.get().getCountry(), user.get().getStreamingServices(), body.getGenres(), start, end, body.getCast(), body.getDirectors()));
-                }
+                retList = fetchCastDirector(viewedMovies, groupLikedMovies, user.get(), body.getGenres(), start, end, body.getDirectors(), body.getCast());
             }
 
 
@@ -165,6 +138,55 @@ public class MovieService {
         return groupLikedMovies;
 
 
+    }
+
+    public List<Movie> fetch(List<Integer> viewedMovies, Set<Integer> groupLikedMovies, User user, List<Genre> genres, Date start, Date end){
+        System.out.println("Here 1");
+        List<Movie> retList;
+        retList = movieRepository.fetchMoviesWithGroup(viewedMovies, groupLikedMovies, user.getCountry(), user.getStreamingServices(), genres, start, end);
+        if(retList.size() > 15){
+            return retList;
+        }
+        else{
+            retList.addAll(movieRepository.fetchMovies(viewedMovies, user.getCountry(), user.getStreamingServices(), genres, start,end));
+        }
+        return retList;
+    }
+    public List<Movie> fetchCast(List<Integer> viewedMovies, Set<Integer> groupLikedMovies, User user, List<Genre> genres, Date start, Date end, Set<String> cast){
+        System.out.println("Here 2");
+        List<Movie> retList;
+        retList = movieRepository.fetchMoviesWithGroupCast(viewedMovies, groupLikedMovies, user.getCountry(),user.getStreamingServices(),genres, cast, start, end);
+        if(retList.size() > 15){
+            return retList;
+        }
+        else{
+            retList.addAll(movieRepository.fetchMoviesCast(viewedMovies, user.getCountry(), user.getStreamingServices(), genres, start,end,cast));
+        }
+        return retList;
+    }
+    public List<Movie> fetchDirector(List<Integer> viewedMovies, Set<Integer> groupLikedMovies, User user, List<Genre> genres, Date start, Date end, Set<String> directors){
+        System.out.println("Here 3");
+        List<Movie> retList;
+        retList = movieRepository.fetchMoviesWithGroupDirector(viewedMovies, groupLikedMovies, user.getCountry() ,user.getStreamingServices(), genres, directors, start, end);
+        if(retList.size() > 15){
+            return retList;
+        }
+        else{
+            retList.addAll(movieRepository.fetchMoviesDirector(viewedMovies, user.getCountry(), user.getStreamingServices(), genres, start, end, directors));
+        }
+        return retList;
+    }
+    public List<Movie> fetchCastDirector(List<Integer> viewedMovies, Set<Integer> groupLikedMovies, User user, List<Genre> genres, Date start, Date end, Set<String> directors, Set<String> cast){
+        System.out.println("Here 4");
+        List<Movie> retList;
+        retList = movieRepository.fetchMoviesWithGroupCastDirector(viewedMovies, groupLikedMovies, user.getCountry(),user.getStreamingServices(), genres, cast, directors, start, end);
+        if(retList.size() > 15){
+            return retList;
+        }
+        else{
+            retList.addAll(movieRepository.fetchMoviesCastDirector(viewedMovies, user.getCountry(), user.getStreamingServices(), genres, start, end, cast, directors));
+        }
+        return retList;
     }
 
 
