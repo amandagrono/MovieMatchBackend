@@ -3,6 +3,11 @@ package com.grono.moviematchbackend.model.enums;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.List;
+
 public enum Genre {
     @JsonProperty("Action & Adventure")
     ActionAndAdventure("Action & Adventure"),
@@ -44,5 +49,9 @@ public enum Genre {
     }
     public String getGenreType(){
         return genreType;
+    }
+
+    public static List<Genre> getAllGenres(){
+        return new ArrayList<>(Arrays.asList(Genre.values()));
     }
 }

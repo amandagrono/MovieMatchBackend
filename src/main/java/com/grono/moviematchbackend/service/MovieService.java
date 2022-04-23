@@ -89,6 +89,9 @@ public class MovieService {
     public List<Movie> fetch(FetchMoviesBody body){
         if(!userService.checkSession(body.getUsername(), body.getToken()))
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        if(body.getGenres().isEmpty()){
+            body.setGenres(Genre.getAllGenres());
+        }
 
         Date start = body.getStart();
         Date end = body.getEnd();
