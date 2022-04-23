@@ -22,7 +22,10 @@ public class MovieController {
     public List<Movie> getAll(){
         return movieService.fetchAllMovies();
     }
-
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable String id){
+        movieService.delete(id);
+    }
     @GetMapping(value = "{id}")
     public Movie getMovieById(@PathVariable String id){
         return movieService.getMovieById(Integer.valueOf(id));

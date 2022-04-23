@@ -31,6 +31,9 @@ public class MovieService {
     public List<Movie> fetchAllMovies(){
         return movieRepository.findAll();
     }
+    public void delete(String id){
+        movieRepository.deleteById(id);
+    }
 
     public Movie getMovieById(Integer id){
         Optional<Movie> movie = movieRepository.findMovieByMovieId(id);
