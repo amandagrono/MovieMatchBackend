@@ -26,7 +26,7 @@ public class Movie {
     private Integer movieId;
     @NotBlank(message = "Title must not be blank")
     private String title;
-    @NotBlank(message = "Overview must not be blank")
+
     private String overview;
     @NotNull(message = "Genres must not be blank")
     private List<Genre> genres;
@@ -48,6 +48,7 @@ public class Movie {
 
     private List<Season> seasons;
     private String status;
+    @JsonProperty("last_air_date")
     private Date lastAirDate;
     private List<String> creators;
     private String director;
@@ -55,7 +56,7 @@ public class Movie {
 
     private String ageRating;
 
-    public Movie(Integer movieId, String title, String overview, List<Genre> genres, List<Country> countries, String posterUrl, Double popularity, String director, List<String> cast, Date releaseDate, String imdbId, String type, String ageRating) {
+    public Movie(Integer movieId, String title, String overview, List<Genre> genres, List<Country> countries, String posterUrl, Double popularity, String director, List<String> cast, Date releaseDate, String imdbId, String type, String ageRating, List<Season> seasons, Date lastAirDate, String status, List<String> creators ) {
         this.movieId = movieId;
         this.title = title;
         this.overview = overview;
@@ -69,5 +70,9 @@ public class Movie {
         this.imdbId = imdbId;
         this.type = type;
         this.ageRating = ageRating;
+        this.seasons = seasons;
+        this.lastAirDate = lastAirDate;
+        this.creators = creators;
+        this.status = status;
     }
 }

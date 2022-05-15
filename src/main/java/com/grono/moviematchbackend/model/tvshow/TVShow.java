@@ -25,7 +25,7 @@ public class TVShow {
 
     @NotBlank(message = "Title not be blank")
     private String title;
-    @NotBlank(message = "Overview must not be blank")
+
     private String overview;
     @NotNull(message = "Genres must not be null")
     private List<Genre> genres;
