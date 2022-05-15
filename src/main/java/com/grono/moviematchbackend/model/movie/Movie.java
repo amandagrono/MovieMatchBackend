@@ -4,6 +4,7 @@ package com.grono.moviematchbackend.model.movie;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.grono.moviematchbackend.model.tvshow.Country;
 import com.grono.moviematchbackend.model.enums.Genre;
+import com.grono.moviematchbackend.model.tvshow.Season;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -37,9 +38,6 @@ public class Movie {
     private String posterUrl;
     @NotNull(message = "Popularity must not be blank")
     private Double popularity;
-    @NotBlank(message = "Director must not be blank")
-    private String director;
-    private List<String> cast;
     @JsonProperty("release_date")
     private Date releaseDate;
     @JsonProperty("imdb_id")
@@ -47,6 +45,14 @@ public class Movie {
     @NotBlank(message = "Type must not be blank")
     private String type;
     @JsonProperty("age_rating")
+
+    private List<Season> seasons;
+    private String status;
+    private Date lastAirDate;
+    private List<String> creators;
+    private String director;
+    private List<String> cast;
+
     private String ageRating;
 
     public Movie(Integer movieId, String title, String overview, List<Genre> genres, List<Country> countries, String posterUrl, Double popularity, String director, List<String> cast, Date releaseDate, String imdbId, String type, String ageRating) {

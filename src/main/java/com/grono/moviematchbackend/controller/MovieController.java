@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -18,10 +19,11 @@ public class MovieController {
 
     private final MovieService movieService;
 
-    @GetMapping("/fetch")
+    @GetMapping("/getAll")
     public List<Movie> getAll(){
         return movieService.fetchAllMovies();
     }
+
     @DeleteMapping("/{id}")
     public void delete(@PathVariable String id){
         movieService.delete(id);

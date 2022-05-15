@@ -1,7 +1,9 @@
 package com.grono.moviematchbackend.service;
 
+import com.grono.moviematchbackend.Util;
 import com.grono.moviematchbackend.model.group.request.CreateGroupBody;
 import com.grono.moviematchbackend.model.group.Group;
+import com.grono.moviematchbackend.model.group.request.JoinGroupBody;
 import com.grono.moviematchbackend.model.group.request.LeaveGroupBody;
 import com.grono.moviematchbackend.model.user.User;
 import com.grono.moviematchbackend.repository.GroupRepository;
@@ -9,6 +11,8 @@ import com.grono.moviematchbackend.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,6 +46,26 @@ public class GroupService {
     public Group getGroup(String id){
         Optional<Group> group = groupRepository.findGroupById(id);
         return group.orElse(null);
+    }
+    public int joinGroup(JoinGroupBody body){
+        if(!userService.checkSession(body.getUser(), body.getToken())) return 4;
+        Optional<Group> groupO = groupRepository.findGroupByCode(body.getCode());
+        if(groupO.isPresent()){
+            //code not expired
+            if(groupO.get().getCode().getExpiry().compareTo(new Date()) < 0){
+                groupO.get().setUsers(Util.addElement(groupO.get().getUsers(), body.getUser()));
+                groupRepository.save(groupO.get());
+                userService.addGroupToUser(groupO.get().getId(), body.getUser());
+                return 0;
+            }
+            //code expired
+            else{
+                return 2;
+            }
+        }
+        else{
+            return 1;
+        }
     }
 
     public int leaveGroup(LeaveGroupBody body){

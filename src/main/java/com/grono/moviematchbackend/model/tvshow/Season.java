@@ -1,4 +1,4 @@
-package com.grono.moviematchbackend.model;
+package com.grono.moviematchbackend.model.tvshow;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

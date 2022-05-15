@@ -16,5 +16,6 @@ public class FetchMoviesBody {
     private Set<String> cast;
     private Date start;
     private Date end;
+    private List<String> type;
 
 }
