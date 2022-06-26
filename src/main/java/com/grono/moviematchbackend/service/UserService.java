@@ -1,9 +1,12 @@
 package com.grono.moviematchbackend.service;
 
+import com.grono.moviematchbackend.Constants;
 import com.grono.moviematchbackend.model.user.request.LoginBody;
 import com.grono.moviematchbackend.model.user.User;
 import com.grono.moviematchbackend.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,7 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
 
@@ -83,17 +86,24 @@ public class UserService {
     }
     public boolean checkSession(String username, String token){
         Optional<User> user = userRepository.findUserByUsername(username);
+        if(!Constants.securityEnabled){
+            return true;
+        }
         return user.map(value -> value.getToken().contains(token)).orElse(false);
+    }
+    public boolean checkSession(String authentication){
+        return checkSession(authentication.split("\\|")[0], authentication.split("\\|")[1]);
     }
 
     public boolean addGroupToUser(String groupId, String username){
         Optional<User> user = userRepository.findUserByUsername(username);
-        if(user.isPresent()){
+        if(user.isPresent() && !user.get().getGroups().contains(groupId)){
             user.get().getGroups().add(groupId);
             userRepository.save(user.get());
             return true;
         }
         return false;
     }
+
 
 }

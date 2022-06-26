@@ -42,6 +42,7 @@ public enum Genre {
     WasAndPolitics("War & Politics"),
     Western("Western");
 
+
     private final String genreType;
 
     Genre(String genreType) {

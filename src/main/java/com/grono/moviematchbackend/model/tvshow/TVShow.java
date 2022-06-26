@@ -1,7 +1,6 @@
 package com.grono.moviematchbackend.model.tvshow;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.grono.moviematchbackend.model.Season;
 import com.grono.moviematchbackend.model.enums.Genre;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -26,7 +25,7 @@ public class TVShow {
 
     @NotBlank(message = "Title not be blank")
     private String title;
-    @NotBlank(message = "Overview must not be blank")
+
     private String overview;
     @NotNull(message = "Genres must not be null")
     private List<Genre> genres;

@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -54,13 +55,13 @@ public class User {
     @JsonProperty("showtime")
     private Boolean showtime;
     @NotNull
-    private List<Integer> listOfLikedMovies;
+    private Set<Integer> listOfLikedMovies;
     @NotNull
-    private List<Integer> listOfDislikedMovies;
+    private Set<Integer> listOfDislikedMovies;
     @NotNull
-    private List<Integer> listOfLikedTvShows;
+    private Set<Integer> listOfLikedTvShows;
     @NotNull
-    private List<Integer> listOfDislikedTvShows;
+    private Set<Integer> listOfDislikedTvShows;
     @NotNull
     private List<String> groups;
 
@@ -80,10 +81,10 @@ public class User {
         this.paramountPlus = paramountPlus;
         this.peacock = peacock;
         this.showtime = showtime;
-        this.listOfLikedMovies = List.of();
-        this.listOfDislikedMovies = List.of();
-        this.listOfLikedTvShows = List.of();
-        this.listOfDislikedTvShows = List.of();
+        this.listOfLikedMovies = Set.of();
+        this.listOfDislikedMovies = Set.of();
+        this.listOfLikedTvShows = Set.of();
+        this.listOfDislikedTvShows = Set.of();
         this.groups = List.of();
         this.country = country;
     }

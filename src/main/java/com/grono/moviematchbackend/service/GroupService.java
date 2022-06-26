@@ -1,7 +1,9 @@
 package com.grono.moviematchbackend.service;
 
+import com.grono.moviematchbackend.Util;
 import com.grono.moviematchbackend.model.group.request.CreateGroupBody;
 import com.grono.moviematchbackend.model.group.Group;
+import com.grono.moviematchbackend.model.group.request.JoinGroupBody;
 import com.grono.moviematchbackend.model.group.request.LeaveGroupBody;
 import com.grono.moviematchbackend.model.user.User;
 import com.grono.moviematchbackend.repository.GroupRepository;
@@ -9,8 +11,8 @@ import com.grono.moviematchbackend.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -43,11 +45,28 @@ public class GroupService {
         Optional<Group> group = groupRepository.findGroupById(id);
         return group.orElse(null);
     }
+    public int joinGroup(JoinGroupBody body){
+        Optional<Group> groupO = groupRepository.findGroupByCode_Name(body.getCode());
+        if(groupO.isPresent()){
+            //code not expired
+            if(groupO.get().getCode().getExpiry().compareTo(new Date()) > 0){
+                groupO.get().setUsers(Util.addElement(groupO.get().getUsers(), body.getUser()));
+                groupRepository.save(groupO.get());
+                boolean x = userService.addGroupToUser(groupO.get().getId(), body.getUser());
+                if(!x) return 3;
+                return 0;
+            }
+            //code expired
+            else{
+                return 2;
+            }
+        }
+        else{
+            return 1;
+        }
+    }
 
     public int leaveGroup(LeaveGroupBody body){
-        if(!userService.checkSession(body.getUsername(), body.getToken())){
-            return 4;
-        }
         Optional<Group> groupO = groupRepository.findGroupById(body.getGroupId());
         if(groupO.isPresent()){
             boolean g = groupO.get().getUsers().remove(body.getUsername());
@@ -74,4 +93,17 @@ public class GroupService {
         }
         return 5;
     }
+    public Set<Integer> getGroupLikedMovies(String groupId){
+        Optional<Group> group = groupRepository.findGroupById(groupId);
+        if(group.isPresent()){
+            Group g = group.get();
+            Set<User> users = userRepository.findByUsernameIn(g.getUsers());
+            List<Set<Integer>> listsOfMovies = users.stream().map(User::getListOfLikedMovies).toList();
+            return Util.intersection(listsOfMovies);
+        }
+        else{
+            return null;
+        }
+    }
+
 }
