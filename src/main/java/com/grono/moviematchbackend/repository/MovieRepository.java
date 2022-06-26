@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.repository.Aggregation;
+import org.springframework.data.mongodb.repository.DeleteQuery;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
@@ -16,6 +17,9 @@ public interface MovieRepository extends MongoRepository<Movie, String> {
 
 
     Optional<Movie> findMovieByMovieId(Integer movieId);
+
+    @Query(value = "{countries : {$exists: true, $size: 0}}", delete = true)
+    void deleteUnsupportedMovies();
 
     //@Query("{movieId : {$nin : ?0}, popularity : { $gte : 5}, countries : {$elemMatch : {country : ?1, streamingServices : {$in: ?2} }}, genres : {$in : ?3}}")
 

@@ -1,9 +1,11 @@
 package com.grono.moviematchbackend.controller;
 
+import com.grono.moviematchbackend.Response;
 import com.grono.moviematchbackend.model.movie.Movie;
 import com.grono.moviematchbackend.model.movie.request.FetchMoviesBody;
 import com.grono.moviematchbackend.model.movie.request.ViewMovieBody;
 import com.grono.moviematchbackend.service.MovieService;
+import com.grono.moviematchbackend.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,7 @@ import java.util.List;
 public class MovieController {
 
     private final MovieService movieService;
+    private final UserService userService;
 
     @GetMapping("/getAll")
     public List<Movie> getAll(){
@@ -29,7 +32,8 @@ public class MovieController {
         movieService.delete(id);
     }
     @GetMapping(value = "{id}")
-    public Movie getMovieById(@PathVariable String id){
+    public Movie getMovieById(@PathVariable String id, @RequestHeader(value = "Auth") String authentication){
+        if(!userService.checkSession(authentication)) Response.unauthorized();
         return movieService.getMovieById(Integer.valueOf(id));
     }
 
@@ -41,11 +45,13 @@ public class MovieController {
         }
     }
     @PostMapping("/view")
-    public void viewMovie(@RequestBody ViewMovieBody body){
+    public void viewMovie(@RequestBody ViewMovieBody body, @RequestHeader(value = "Auth") String authentication){
+        if(!userService.checkSession(authentication)) Response.unauthorized();
         movieService.viewMovie(body);
     }
     @GetMapping("/fetch")
-    public List<Movie> fetchMovies(@RequestBody FetchMoviesBody body){
+    public List<Movie> fetchMovies(@RequestBody FetchMoviesBody body, @RequestHeader(value = "Auth") String authentication){
+        if(!userService.checkSession(authentication)) Response.unauthorized();
         return movieService.fetch(body);
         //return null;
     }

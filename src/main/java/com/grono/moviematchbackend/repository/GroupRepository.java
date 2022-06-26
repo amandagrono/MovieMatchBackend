@@ -12,6 +12,6 @@ public interface GroupRepository extends MongoRepository<Group, String> {
 
     Optional<Group> findGroupById(String id);
 
-    @Query("{code.name : ?1}")
-    Optional<Group> findGroupByCode(String code);
+
+    Optional<Group> findGroupByCode_Name(String code);
 }

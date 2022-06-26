@@ -35,6 +35,10 @@ public class MovieService {
     public void delete(String id){
         movieRepository.deleteById(id);
     }
+    public void deleteEmpty(){
+
+    }
+
 
     public Movie getMovieById(Integer id){
         Optional<Movie> movie = movieRepository.findMovieByMovieId(id);
@@ -69,9 +73,6 @@ public class MovieService {
 
     }
     public void viewMovie(ViewMovieBody body){
-        if(!userService.checkSession(body.getUsername(), body.getToken())){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        }
         Optional<User> user = userRepository.findUserByUsername(body.getUsername());
         if(user.isPresent()){
             if(body.getLike()){
@@ -88,12 +89,9 @@ public class MovieService {
     }
 
     public List<Movie> fetch(FetchMoviesBody body){
-        if(!userService.checkSession(body.getUsername(), body.getToken()))
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         if(body.getGenres().isEmpty()){
             body.setGenres(Genre.getAllGenres());
         }
-
         Date start = body.getStart();
         Date end = body.getEnd();
         if(start == null) {

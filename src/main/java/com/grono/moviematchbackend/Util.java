@@ -1,12 +1,12 @@
 package com.grono.moviematchbackend;
 
+import com.google.common.collect.Sets;
 import lombok.experimental.UtilityClass;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 
 public class Util {
@@ -16,5 +16,12 @@ public class Util {
         return newList;
     }
 
+    public static <E> Set<E> intersection(List<Set<E>> sets){
+        Set<E> result = Sets.newHashSet(sets.get(0));
+        for(Set<E> set : sets){
+            result = Sets.intersection(result, Sets.newHashSet(set));
+        }
+        return result;
+    }
 
 }
