@@ -1,7 +1,6 @@
 package com.grono.moviematchbackend.service;
 
 import com.grono.moviematchbackend.model.enums.Genre;
-import com.grono.moviematchbackend.model.enums.StreamingService;
 import com.grono.moviematchbackend.model.group.Group;
 import com.grono.moviematchbackend.model.movie.Movie;
 import com.grono.moviematchbackend.model.movie.request.FetchMoviesBody;
@@ -11,14 +10,17 @@ import com.grono.moviematchbackend.repository.GroupRepository;
 import com.grono.moviematchbackend.repository.MovieRepository;
 import com.grono.moviematchbackend.repository.UserRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
+
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.*;
+import org.springframework.data.mongodb.core.query.Criteria;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
-import java.util.stream.Collectors;
+
 import java.util.stream.Stream;
 
 @Service
@@ -28,6 +30,8 @@ public class MovieService {
     private final UserService userService;
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
+
+    private final MongoTemplate mongoTemplate;
 
     public List<Movie> fetchAllMovies(){
         return movieRepository.findAll();
@@ -88,7 +92,7 @@ public class MovieService {
         }
     }
 
-    public List<Movie> fetch(FetchMoviesBody body){
+    public Set<Movie> fetch(FetchMoviesBody body){
         if(body.getGenres().isEmpty()){
             body.setGenres(Genre.getAllGenres());
         }
@@ -102,13 +106,13 @@ public class MovieService {
             end = new Date();
         }
 
-        List<Movie> retList = new ArrayList<>();
+        Set<Movie> retList = new HashSet<>();
         Optional<User> user = userRepository.findUserByUsername(body.getUsername());
         if(user.isPresent()){
             List<Integer> viewedMovies = Stream.concat(user.get().getListOfLikedMovies().stream(), user.get().getListOfDislikedMovies().stream()).toList();
             Set<Integer> groupLikedMovies = getGroupLikedMovies(user.get().getGroups());
             if(body.getType().isEmpty()) body.setType(List.of("movie", "tv"));
-            if(body.getCast().isEmpty() && body.getDirectors().isEmpty()){
+            /*if(body.getCast().isEmpty() && body.getDirectors().isEmpty()){
                 retList = fetch(viewedMovies, groupLikedMovies, user.get(), body.getGenres(), start, end, body.getType());
             }
             else if(!body.getCast().isEmpty() && body.getDirectors().isEmpty()){
@@ -119,7 +123,8 @@ public class MovieService {
             }
             else{
                 retList = fetchCastDirector(viewedMovies, groupLikedMovies, user.get(), body.getGenres(), start, end, body.getDirectors(), body.getCast(), body.getType());
-            }
+            }*/
+            retList = fetchMoviesBy(viewedMovies, groupLikedMovies, user.get(), body.getGenres(), start, end, body.getDirectors(), body.getCast(), body.getType());
         }
         return retList;
     }
@@ -189,6 +194,45 @@ public class MovieService {
         }
         return retList;
     }
+    public Set<Movie> fetchMoviesBy(List<Integer> viewedMovies, Set<Integer> groupLikedMovies, User user, List<Genre> genres, Date start, Date end, Set<String> directors, Set<String> cast, List<String> type){
+        Criteria criteria = new Criteria();
+        List<Criteria> criteriaList = new ArrayList<>();
+        Criteria groupCriteria = null;
+        criteriaList.add(Criteria.where("movieId").nin(viewedMovies));
+        if(groupLikedMovies != null && !groupLikedMovies.isEmpty()){
+            groupCriteria = Criteria.where("movieId").in(groupLikedMovies);
+            criteriaList.add(groupCriteria);
+        }
+        if(genres != null && !genres.isEmpty()){
+            criteriaList.add(Criteria.where("genres").in(genres));
+        }
+        criteriaList.add(Criteria.where("countries").elemMatch(Criteria.where("country").is(user.getCountry())).and("streamingServices").in(user.getStreamingServices()));
+        criteriaList.add(Criteria.where("releaseDate").gte(start).lte(end));
+        if(directors != null && !directors.isEmpty()){
+            criteriaList.add(Criteria.where("director").in(directors));
+        }
+        if(cast != null && !cast.isEmpty()){
+            criteriaList.add(Criteria.where("cast").in(cast));
+        }
+        criteriaList.add(Criteria.where("type").in(type));
 
+        criteria.andOperator(criteriaList);
+        SampleOperation sampleOperation = Aggregation.sample(25);
+        MatchOperation matchOperation = Aggregation.match(criteria);
+        TypedAggregation<Movie> aggregation = Aggregation.newAggregation(Movie.class, matchOperation, sampleOperation);
+        AggregationResults<Movie> movies = mongoTemplate.aggregate(aggregation, Movie.class);
+        Set<Movie> movieList = new HashSet<>(movies.getMappedResults());
+        if(movies.getMappedResults().size() < 25){
+            sampleOperation = Aggregation.sample(25 - movieList.size());
+            criteriaList.remove(groupCriteria);
+            criteria = new Criteria();
+            criteria.andOperator(criteriaList);
+            matchOperation = Aggregation.match(criteria);
+            aggregation = Aggregation.newAggregation(Movie.class, matchOperation, sampleOperation);
+            movies = mongoTemplate.aggregate(aggregation, Movie.class);
+            movieList.addAll(movies.getMappedResults());
+        }
+        return movieList;
+    }
 
 }

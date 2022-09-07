@@ -6,6 +6,7 @@ import com.grono.moviematchbackend.model.movie.Movie;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.DeleteQuery;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -78,5 +79,8 @@ public interface MovieRepository extends MongoRepository<Movie, String> {
             "{$sample : {size : 25}}"
     })
     ArrayList<Movie> fetchMoviesWithGroupCastDirector(List<Integer> viewedMovies, Set<Integer> groupLikedMovies, String country,List<StreamingService> services, List<Genre> genres, Set<String> cast, Set<String> directors, Date start, Date end, List<String> type);
+
+    @Aggregation(pipeline = {"{$match : ?0}", "{$sample : {size : 25}}"})
+    ArrayList<Movie> findMoviesBy(Criteria query);
 
 }

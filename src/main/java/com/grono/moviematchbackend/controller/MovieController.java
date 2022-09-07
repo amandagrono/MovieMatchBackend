@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("api/v1/movie")
@@ -50,7 +51,7 @@ public class MovieController {
         movieService.viewMovie(body);
     }
     @GetMapping("/fetch")
-    public List<Movie> fetchMovies(@RequestBody FetchMoviesBody body, @RequestHeader(value = "Auth") String authentication){
+    public Set<Movie> fetchMovies(@RequestBody FetchMoviesBody body, @RequestHeader(value = "Auth") String authentication){
         if(!userService.checkSession(authentication)) Response.unauthorized();
         return movieService.fetch(body);
         //return null;
